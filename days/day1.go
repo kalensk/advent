@@ -8,8 +8,7 @@ import (
 	"strconv"
 )
 
-// Find the two entries that sum to 2020 and then multiply those two numbers
-// together.
+
 func Day1() (err error) {
 	fmt.Println("Running day 1 challenge...")
 
@@ -37,13 +36,13 @@ func Day1() (err error) {
 		return fmt.Errorf("scanning %q: %w", path, err)
 	}
 
-	part1, err := part1(2020, nums)
+	part1, err := sumOfTwoEntries(2020, nums)
 	_, err = fmt.Printf("part1: %d\n", part1)
 	if err != nil {
 		return err
 	}
 
-	part2, err := part2(2020, nums)
+	part2, err := sumOfThreeEntries(2020, nums)
 	_, err = fmt.Printf("part2: %d\n", part2)
 	if err != nil {
 		return err
@@ -52,7 +51,9 @@ func Day1() (err error) {
 	return nil
 }
 
-func part1(sum uint64, nums []uint64) (uint64, error) {
+// Find the two entries that sum to 2020 and then multiply those two numbers
+// together.
+func sumOfTwoEntries(sum uint64, nums []uint64) (uint64, error) {
 	for _, current := range nums {
 		for _, next := range nums[1:] {
 			if (current + next) == sum {
@@ -64,7 +65,9 @@ func part1(sum uint64, nums []uint64) (uint64, error) {
 	return 0, errors.New("not found")
 }
 
-func part2(sum uint64, nums []uint64) (uint64, error) {
+// Find the three entries that sum to 2020 and then multiply those three numbers
+// together.
+func sumOfThreeEntries(sum uint64, nums []uint64) (uint64, error) {
 	for _, current := range nums {
 		for _, next := range nums[1:] {
 			for _, following := range nums[2:] {
