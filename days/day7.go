@@ -9,11 +9,11 @@ import (
 )
 
 type Luggage struct {
-	bag      string
-	contains []Bag
+	bag         string
+	description []BagDescription
 }
 
-type Bag struct {
+type BagDescription struct {
 	num uint64
 	bag string
 }
@@ -43,11 +43,11 @@ func Day7() (err error) {
 		parts := strings.SplitN(line, " bags contain ", 2)
 		bag := parts[0]
 
-		var bags []Bag
+		var bags []BagDescription
 		contains := strings.Split(parts[1], ", ")
 		for _, c := range contains {
 			if c == "no other bags" {
-				bags = append(bags, Bag{num: 0, bag: ""})
+				bags = append(bags, BagDescription{num: 0, bag: ""})
 				continue
 			}
 
@@ -60,10 +60,10 @@ func Day7() (err error) {
 			}
 			bag := parts[1]
 
-			bags = append(bags, Bag{num: times, bag: bag})
+			bags = append(bags, BagDescription{num: times, bag: bag})
 		}
 
-		luggage = append(luggage, Luggage{bag: bag, contains: bags})
+		luggage = append(luggage, Luggage{bag: bag, description: bags})
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -77,12 +77,7 @@ func Day7() (err error) {
 	}
 
 	part2 := findRequiredBags(luggage, "shiny gold")
-	var sum uint64
-	for _, num := range part2 {
-		sum += num
-	}
-
-	_, err = fmt.Printf("part2: %d\n", sum)
+	_, err = fmt.Printf("part2: %d\n", part2)
 	if err != nil {
 		return err
 	}
@@ -94,7 +89,7 @@ func Day7() (err error) {
 func findContainingBags(luggage []Luggage, needle string) map[string]bool {
 	found := make(map[string]bool)
 	for _, l := range luggage {
-		if contains(l.contains, needle) {
+		if contains(l.description, needle) {
 			bags := findContainingBags(luggage, l.bag)
 
 			// add bags to found
@@ -109,7 +104,7 @@ func findContainingBags(luggage []Luggage, needle string) map[string]bool {
 	return found
 }
 
-func contains(bags []Bag, needle string) bool {
+func contains(bags []BagDescription, needle string) bool {
 	for _, b := range bags {
 		if b.bag == needle {
 			return true
@@ -120,22 +115,32 @@ func contains(bags []Bag, needle string) bool {
 }
 
 // How many individual bags are required inside your single shiny gold bag?
-func findRequiredBags(luggage []Luggage, needle string) map[string]uint64 {
-	found := make(map[string]uint64)
-	for _, l := range luggage {
-		for _, c := range l.contains {
-			if c.bag == needle {
-				bags := findRequiredBags(luggage, l.bag)
+func findRequiredBags(luggage []Luggage, bag string) uint64 {
+	var total uint64
 
-				// add bags to found
-				for k, v := range bags {
-					found[k] = v
-				}
-				// add outer bag to found
-				found[l.bag] = 1 * c.num
-			}
+	descriptions := findBag(luggage, bag)
+	if descriptions == nil {
+		return total
+	}
+
+	for _, d := range descriptions {
+		count := findRequiredBags(luggage, d.bag)
+		count += 1            // include the found bag
+		count = d.num * count // multiply the number of bags by the amount in the luggage
+
+		total += count
+	}
+
+	return total
+}
+
+func findBag(luggage []Luggage, bag string) []BagDescription {
+	for _, l := range luggage {
+		if l.bag == bag {
+			return l.description
 		}
 	}
 
-	return found
+	return []BagDescription{}
 }
+
