@@ -118,7 +118,7 @@ func validPasswordsPart2(pws []PasswordPolicy) (int, error) {
  		inPos1 := ([]rune(pw.pw))[pw.policy.lower - 1] == letter
 		inPos2 := ([]rune(pw.pw))[pw.policy.upper - 1] == letter
 
-		if (inPos1 && !inPos2) || (!inPos1 && inPos2) {
+		if (inPos1 && !inPos2) || (!inPos1 && inPos2) { // inPos1 != inPos2
 			valid++
 		}
 	}
