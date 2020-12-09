@@ -74,7 +74,7 @@ func returnAccBeforeInfiniteLoop(instructions []*instruction) (int64, error) {
 	var acc int64
 	var pos int64
 
-	for pos <= int64(len(instructions)) {
+	for pos < int64(len(instructions)) {
 		i := instructions[pos]
 
 		if i.visited == true {
